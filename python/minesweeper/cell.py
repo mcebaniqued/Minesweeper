@@ -176,7 +176,7 @@ class Cell:
         return f"Cell({self.x}, {self.y})"
 
 #TODO: change the behavior of showing zero-mine cells to expand (not just the adjacent of the clicked cell) DONE
-#BUG: a zero cell that's diagonal to another zero cell causes to expand to other cells
+#BUG:  a zero cell that's diagonal to another zero cell causes to expand to other cells
 #TODO: prevent from left clicking flagged cells
 #TODO: change the button color of zero cells DONE
 #TODO: add a counter for flagged cell. it should have the same amount of mines. limit the number of cells to be flagged
