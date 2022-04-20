@@ -10,7 +10,6 @@ class Cell:
     cell_count = settings.CELL_COUNT
     flag_count = settings.FLAG_COUNT
     start_time = 0
-    #cell_count_label_object = None
     cell_count_flag_object = None
     cell_timer_object = None
 
@@ -113,10 +112,14 @@ class Cell:
 
             #Replace the text of cell count label with updated count
             Cell.cell_count -= 1
-            #if Cell.cell_count_label_object:
-            #    Cell.cell_count_label_object.configure(
-            #        text = f"Cells Left: {Cell.cell_count}"
-            #    )
+
+            #If the flagged non-mine cell is revealed, give the number of flags back to the counter
+            if self.is_flagged == True:
+                Cell.flag_count += 1
+                if Cell.cell_count_flag_object:
+                    Cell.cell_count_flag_object.configure(
+                        text = f"Flags: {Cell.flag_count}"
+                    )
         
         #Mark the cell as opened
         self.is_opened = True
@@ -157,12 +160,11 @@ class Cell:
 
     #A function that tells what the button does when right clicked
     def rightClickActions(self, event):
-        
         #Toggle color ON
         if not self.is_flagged:
             #If the number of flags is equal to zero, do not allow right clicks
-            if self.flag_count == 0:
-                self.cell_button_object.unbind("<Button-1>")
+            if Cell.flag_count == 0:
+                self.cell_button_object.unbind("<Button-3>")    #it was on Button-1 (left click)
             else:
                 self.cell_button_object.configure(bg = "yellow")
                 self.is_flagged = True
@@ -209,20 +211,6 @@ class Cell:
     #Prints out xy-coordinates of each cell by using print(Cell.all) in main.py
     def __repr__(self):
         return f"Cell({self.x}, {self.y})"
-
-    #@staticmethod
-    #A function that creates cell count label for the game
-    #def createCellCountLabel(location):
-    #    label = Label(
-    #        location,
-    #        bg      = "black",
-    #        fg      = "white",
-    #        text    = f"Cells Left: {Cell.cell_count}",
-    #        width   = 12,
-    #        height  = 4,
-    #        font    = ("", 30)
-    #    )
-    #    Cell.cell_count_label_object = label
     
     @staticmethod
     #A function that creates flag count label for the game
@@ -250,11 +238,7 @@ class Cell:
             font   = ("", 20)
         )
 
-#BUG:  a zero cell that's diagonal to another zero cell causes to expand to other cells
-#TODO: DONE change the behavior of showing zero-mine cells to expand (not just the adjacent of the clicked cell)
-#TODO: DONE prevent from left clicking flagged cells
-#TODO: DONE change the button color of zero cells DONE
-#TODO: DONE add a counter for flagged cell. it should have the same amount of mines. limit the number of cells to be flagged
-#TODO: DONE change text size of the buttons to be a little bit bigger
+#BUG?:  a zero cell that's diagonal to another zero cell causes to expand to other cells
+#BUG:  FIXED right clicking a normal cell after the number of flags go down to zero will not let you left click it
+#BUG:  FIXED if a flagged non-mine cell gets revealed, it doesn't give the remaining amount of flags back
 #TODO: add game menu bar using Menu(root). Add functionality of Reset, Quit, Change Difficulty, etc.
-#TODO: DONE remove cells left counter label

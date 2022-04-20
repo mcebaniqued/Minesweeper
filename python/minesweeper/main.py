@@ -40,51 +40,6 @@ Cell.cell_timer_object.place(
     y = utils.height_percent(10)
 )
 
-#Title of the game
-#game_title = Label(
-#    top_frame,
-#    bg   = "black",
-#    fg   = "white",
-#    text = "Minesweeper",
-#    font = ('', 48)
-#)
-
-#game_title.place(
-#    x = utils.width_percent(25),
-#    y = 0
-#)
-
-#Left Frame
-#left_frame = Frame(
-#    root,
-#    bg     = "red",   #CHANGE BACK LATER
-#    width  = utils.width_percent(25),
-#    height = settings.HEIGHT
-#)
-#left_frame.place(
-#    x = 0, 
-#    y = 0
-#)
-
-#Right Frame
-#right_frame = Frame(
-#    root,
-#    bg     = "blue",   #CHANGE BACK LATER
-#    width  = utils.width_percent(25),
-#    height = settings.HEIGHT
-#)
-#right_frame.place(
-#    x = 0, 
-#    y = 0
-#)
-
-#Call the cell count label from Cell class
-#Cell.createCellCountLabel(left_frame)
-#Cell.cell_count_label_object.place(
-#    x = 0,
-#    y = 0
-#)
-
 #Actual Game Frame
 center_frame = Frame(
     root,
