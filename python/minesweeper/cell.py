@@ -75,8 +75,8 @@ class Cell:
 
     #Interrupts the game and displays a message that the game is over
     def showMine(self):
-
         self.cell_button_object.configure(bg = "red")
+
         ctypes.windll.user32.MessageBoxW(0, "You clicked on a mine!", "Game Over", 0)
         sys.exit()
 
@@ -99,7 +99,7 @@ class Cell:
                 elif self.getNumberOfMines == 4:
                     self.cell_button_object.configure(fg = "#00007D")
                 elif self.getNumberOfMines == 5:
-                    self.cell_button_object.configure(fg = "#B0B0B0")
+                    self.cell_button_object.configure(fg = "grey16") #was #B0B0B0 but it's hard to see on the cell
                 elif self.getNumberOfMines == 6:
                     self.cell_button_object.configure(fg = "#007B7D")
                 elif self.getNumberOfMines == 7:
