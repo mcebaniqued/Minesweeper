@@ -42,6 +42,7 @@ class Cell:
         self.cell_button_object = button
 
     @staticmethod
+    #A function that creates cell count label for the game
     def createCellCountLabel(location):
         label = Label(
             location,
@@ -61,21 +62,30 @@ class Cell:
             self.showMine()
         #If player clicked on normal cell
         else:
-            if self.getNumberOfMines == 0:
-                #TODO: open other cells with 0 instead of just adjacent cells
-                for cell_obj in self.findAdjacentCells:
-                    cell_obj.showCell()
+            #Reveals its own cell
             self.showCell()
+
+            #Reveals other adjacent cells if the opened cell has 0 mines
+            self.showAllAdjacent()
             
             #If Mine Count == Cells Left Count, player wins
             if Cell.cell_count == settings.MINES_COUNT:
                 ctypes.windll.user32.MessageBoxW(0, "You win!", "Congratulations", 0)
                 sys.exit()
         
-        #TODO: prevent clicking on cells that are marked candidate mines
+    #TODO: prevent clicking on cells that are marked candidate mines
+
+    #Recursion function that uses DFS to look for adjacent cells with 0 adjacent mines, and opens their adjacent cells
+    def showAllAdjacent(self):
+        if self.getNumberOfMines == 0:
+                for cell_obj in self.findAdjacentCells:
+                    if cell_obj.is_opened == False:
+                        cell_obj.showCell()
+                        cell_obj.showAllAdjacent()
 
     #Interrupts the game and displays a message that the game is over
     def showMine(self):
+
         self.cell_button_object.configure(bg = "red")
         ctypes.windll.user32.MessageBoxW(0, "You clicked on a mine!", "Game Over", 0)
         sys.exit()
@@ -83,22 +93,23 @@ class Cell:
     #Shows the number of cells that potentially has mines
     def showCell(self):
         if not self.is_opened:
-            #Get the number of mines that could be adjacent
-            self.cell_button_object.configure(text = self.getNumberOfMines)
-
             #Makes sure that the non-mine cell are in the right button color
-            self.cell_button_object.configure(bg = "SystemButtonFace")
+            self.cell_button_object.configure(bg = "#BDBDBD")
 
-            #Prevents opened cell from being clicked
-            self.cell_button_object.unbind("<Button-1>")
-            self.cell_button_object.unbind("<Button-3>")
+            if self.getNumberOfMines != 0:
+                #Get the number of mines that could be adjacent (cell's with zero adj mines doesnt get '0"
+                self.cell_button_object.configure(text = self.getNumberOfMines)
 
-            #Replace the text of cell count label with updated count
-            Cell.cell_count -= 1
-            if Cell.cell_count_label_object:
-                Cell.cell_count_label_object.configure(
-                    text = f"Cells Left: {Cell.cell_count}"
-                )
+                #Prevents opened cell from being clicked
+                self.cell_button_object.unbind("<Button-1>")
+                self.cell_button_object.unbind("<Button-3>")
+
+                #Replace the text of cell count label with updated count
+                Cell.cell_count -= 1
+                if Cell.cell_count_label_object:
+                    Cell.cell_count_label_object.configure(
+                        text = f"Cells Left: {Cell.cell_count}"
+                    )
         
         #Mark the cell as opened
         self.is_opened = True
@@ -163,3 +174,10 @@ class Cell:
     #Prints out xy-coordinates of each cell by using print(Cell.all) in main.py
     def __repr__(self):
         return f"Cell({self.x}, {self.y})"
+
+#TODO: change the behavior of showing zero-mine cells to expand (not just the adjacent of the clicked cell) DONE
+#BUG: a zero cell that's diagonal to another zero cell causes to expand to other cells
+#TODO: prevent from left clicking flagged cells
+#TODO: change the button color of zero cells DONE
+#TODO: add a counter for flagged cell. it should have the same amount of mines. limit the number of cells to be flagged
+#TODO: change text size of the button to be a little bit bigger

@@ -24,6 +24,7 @@ top_frame.place(
     y = 0
 )
 
+#Title of the game
 game_title = Label(
     top_frame,
     bg   = "black",
@@ -52,6 +53,7 @@ left_frame.place(
 
 #TODO: polish label
 #TODO: add counter for flags
+#TODO: add game timer
 #Call the label from Cell class
 Cell.createCellCountLabel(left_frame)
 Cell.cell_count_label_object.place(
