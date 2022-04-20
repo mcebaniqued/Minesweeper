@@ -3,11 +3,16 @@ import random   #used in randomizedMines
 import settings #used in randomizedMines
 import ctypes   #used in leftClickActions & showMines
 import sys      #used in leftClickActions & showMines
+#import time    #add later
 
 class Cell:
     all = []
     cell_count = settings.CELL_COUNT
-    cell_count_label_object = None
+    flag_count = settings.FLAG_COUNT
+    start_time = 0
+    #cell_count_label_object = None
+    cell_count_flag_object = None
+    cell_timer_object = None
 
     def __init__(self, x, y, is_mine = False):
         self.is_mine = is_mine
@@ -25,8 +30,9 @@ class Cell:
         #Button object
         button = Button(
             location,
-            width  = 6, #width must be double the height to create a square button
-            height = 3,
+            width  = 3, #1:3 ratio?
+            height = 1,
+            font   = ('', 20)
         )
 
         #Assigns an action when left clicked
@@ -40,20 +46,6 @@ class Cell:
             self.rightClickActions)
 
         self.cell_button_object = button
-
-    @staticmethod
-    #A function that creates cell count label for the game
-    def createCellCountLabel(location):
-        label = Label(
-            location,
-            bg      = "black",
-            fg      = "white",
-            text    = f"Cells Left: {Cell.cell_count}",
-            width   = 12,
-            height  = 4,
-            font    = ("", 30)
-        )
-        Cell.cell_count_label_object = label
 
     #A function that tells what the button does when left clicked
     def leftClickActions(self, event):
@@ -72,8 +64,6 @@ class Cell:
             if Cell.cell_count == settings.MINES_COUNT:
                 ctypes.windll.user32.MessageBoxW(0, "You win!", "Congratulations", 0)
                 sys.exit()
-        
-    #TODO: prevent clicking on cells that are marked candidate mines
 
     #Recursion function that uses DFS to look for adjacent cells with 0 adjacent mines, and opens their adjacent cells
     def showAllAdjacent(self):
@@ -99,17 +89,34 @@ class Cell:
             if self.getNumberOfMines != 0:
                 #Get the number of mines that could be adjacent (cell's with zero adj mines doesnt get '0"
                 self.cell_button_object.configure(text = self.getNumberOfMines)
+                #Change color of the text according to the number of mines
+                if self.getNumberOfMines == 1:
+                    self.cell_button_object.configure(fg = "#0000F2")
+                elif self.getNumberOfMines == 2:
+                    self.cell_button_object.configure(fg = "#007B00")
+                elif self.getNumberOfMines == 3:
+                    self.cell_button_object.configure(fg = "#F20000")
+                elif self.getNumberOfMines == 4:
+                    self.cell_button_object.configure(fg = "#00007D")
+                elif self.getNumberOfMines == 5:
+                    self.cell_button_object.configure(fg = "#B0B0B0")
+                elif self.getNumberOfMines == 6:
+                    self.cell_button_object.configure(fg = "#007B7D")
+                elif self.getNumberOfMines == 7:
+                    self.cell_button_object.configure(fg = "#7D007D")
+                elif self.getNumberOfMines == 8:
+                    self.cell_button_object.configure(fg = "#6F6F6F")
 
                 #Prevents opened cell from being clicked
                 self.cell_button_object.unbind("<Button-1>")
                 self.cell_button_object.unbind("<Button-3>")
 
-                #Replace the text of cell count label with updated count
-                Cell.cell_count -= 1
-                if Cell.cell_count_label_object:
-                    Cell.cell_count_label_object.configure(
-                        text = f"Cells Left: {Cell.cell_count}"
-                    )
+            #Replace the text of cell count label with updated count
+            Cell.cell_count -= 1
+            #if Cell.cell_count_label_object:
+            #    Cell.cell_count_label_object.configure(
+            #        text = f"Cells Left: {Cell.cell_count}"
+            #    )
         
         #Mark the cell as opened
         self.is_opened = True
@@ -150,14 +157,42 @@ class Cell:
 
     #A function that tells what the button does when right clicked
     def rightClickActions(self, event):
+        
         #Toggle color ON
         if not self.is_flagged:
-            self.cell_button_object.configure(bg = "yellow")
-            self.is_flagged = True
+            #If the number of flags is equal to zero, do not allow right clicks
+            if self.flag_count == 0:
+                self.cell_button_object.unbind("<Button-1>")
+            else:
+                self.cell_button_object.configure(bg = "yellow")
+                self.is_flagged = True
+
+                #Replace the text of flag count label with updated count (decrement)
+                Cell.flag_count -= 1
+                if Cell.cell_count_flag_object:
+                    Cell.cell_count_flag_object.configure(
+                        text = f"Flags: {Cell.flag_count}"
+                    )
+
+                #Unbinds left click when flagged to prevent being accidentally clicked
+                self.cell_button_object.unbind("<Button-1>")
+
         #Toggle color OFF
         else:
             self.cell_button_object.configure(bg = "SystemButtonFace")
             self.is_flagged = False
+
+            #Replace the text of flag count label with updated count (increment)
+            Cell.flag_count += 1
+            if Cell.cell_count_flag_object:
+                Cell.cell_count_flag_object.configure(
+                    text = f"Flags: {Cell.flag_count}"
+                )
+
+            #Binds the left click back to the unmarked cell
+            self.cell_button_object.bind(
+                "<Button-1>",
+                self.leftClickActions)
 
     #A function that chooses random cells to become mines
     @staticmethod
@@ -175,9 +210,51 @@ class Cell:
     def __repr__(self):
         return f"Cell({self.x}, {self.y})"
 
-#TODO: change the behavior of showing zero-mine cells to expand (not just the adjacent of the clicked cell) DONE
+    #@staticmethod
+    #A function that creates cell count label for the game
+    #def createCellCountLabel(location):
+    #    label = Label(
+    #        location,
+    #        bg      = "black",
+    #        fg      = "white",
+    #        text    = f"Cells Left: {Cell.cell_count}",
+    #        width   = 12,
+    #        height  = 4,
+    #        font    = ("", 30)
+    #    )
+    #    Cell.cell_count_label_object = label
+    
+    @staticmethod
+    #A function that creates flag count label for the game
+    def createFlagCountLabel(location):
+        Cell.cell_count_flag_object = Label(
+            location,
+            bg     = "grey8",
+            fg     = "#FF0000",
+            text   = f"Flags: {Cell.flag_count}",
+            width  = 8,
+            height = 1,
+            font   = ("", 20)
+        )
+    
+    #A function that creates tinmer label for the game
+    @staticmethod
+    def createTimerLabel(location):
+        Cell.cell_timer_object = Label(
+            location,
+            bg     = "grey8",
+            fg     = "#FF0000",
+            text   = f"Time: {Cell.start_time}",
+            width  = 8,
+            height = 1,
+            font   = ("", 20)
+        )
+
 #BUG:  a zero cell that's diagonal to another zero cell causes to expand to other cells
-#TODO: prevent from left clicking flagged cells
-#TODO: change the button color of zero cells DONE
-#TODO: add a counter for flagged cell. it should have the same amount of mines. limit the number of cells to be flagged
-#TODO: change text size of the button to be a little bit bigger
+#TODO: DONE change the behavior of showing zero-mine cells to expand (not just the adjacent of the clicked cell)
+#TODO: DONE prevent from left clicking flagged cells
+#TODO: DONE change the button color of zero cells DONE
+#TODO: DONE add a counter for flagged cell. it should have the same amount of mines. limit the number of cells to be flagged
+#TODO: DONE change text size of the buttons to be a little bit bigger
+#TODO: add game menu bar using Menu(root). Add functionality of Reset, Quit, Change Difficulty, etc.
+#TODO: DONE remove cells left counter label
