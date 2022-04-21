@@ -1,6 +1,4 @@
 from tkinter import *
-import ctypes   #used in leftClickActions & showMines
-import sys      #used in leftClickActions & showMines
 
 import settings
 import utils
@@ -64,6 +62,8 @@ for x in range(settings.GRID_SIZE):
 
 #Choose random buttons to become mines
 Cell.randomizedMines()
+
+Cell.gameTimer()
 
 #Run the window
 root.mainloop()

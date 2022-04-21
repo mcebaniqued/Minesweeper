@@ -3,13 +3,12 @@ import random   #used in randomizedMines
 import settings #used in randomizedMines
 import ctypes   #used in leftClickActions & showMines
 import sys      #used in leftClickActions & showMines
-#import time    #add later
 
 class Cell:
     all = []
     cell_count = settings.CELL_COUNT
     flag_count = settings.FLAG_COUNT
-    start_time = 0
+    start_time = -1
     cell_count_flag_object = None
     cell_timer_object = None
 
@@ -237,6 +236,13 @@ class Cell:
             height = 1,
             font   = ("", 20)
         )
+    
+    def gameTimer():
+        Cell.start_time += 1
+        Cell.cell_timer_object.config(
+            text   = f"Time: {Cell.start_time}"
+        )
+        Cell.cell_timer_object.after(1000, Cell.gameTimer)
 
 #BUG?:  a zero cell that's diagonal to another zero cell causes to expand to other cells
 #BUG:  FIXED right clicking a normal cell after the number of flags go down to zero will not let you left click it
