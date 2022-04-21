@@ -211,8 +211,8 @@ class Cell:
     def __repr__(self):
         return f"Cell({self.x}, {self.y})"
     
-    @staticmethod
     #A function that creates flag count label for the game
+    @staticmethod
     def createFlagCountLabel(location):
         Cell.cell_count_flag_object = Label(
             location,
@@ -237,14 +237,17 @@ class Cell:
             font   = ("", 20)
         )
     
+    #Updates the timer label every second using recursion
     def gameTimer():
         Cell.start_time += 1
         Cell.cell_timer_object.config(
             text   = f"Time: {Cell.start_time}"
         )
+        #Wait 1 second (1000 ms) then run the function again
         Cell.cell_timer_object.after(1000, Cell.gameTimer)
+        
+        #Safety precaution? so it loops back to 0 when it hits 999
+        if Cell.start_time == 1000:
+            Cell.start_time = 0
 
 #BUG?:  a zero cell that's diagonal to another zero cell causes to expand to other cells
-#BUG:  FIXED right clicking a normal cell after the number of flags go down to zero will not let you left click it
-#BUG:  FIXED if a flagged non-mine cell gets revealed, it doesn't give the remaining amount of flags back
-#TODO: add game menu bar using Menu(root). Add functionality of Reset, Quit, Change Difficulty, etc.
