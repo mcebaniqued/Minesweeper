@@ -3,6 +3,7 @@ import random   #used in randomizedMines
 import settings #used in randomizedMines
 import ctypes   #used in leftClickActions & showMines
 import sys      #used in leftClickActions & showMines
+import os
 
 class Cell:
     all = []
@@ -61,7 +62,8 @@ class Cell:
             #If Mine Count == Cells Left Count, player wins
             if Cell.cell_count == settings.MINES_COUNT:
                 ctypes.windll.user32.MessageBoxW(0, "You win!", "Congratulations", 0)
-                sys.exit()
+                #Restart game
+                Cell.restartProgram()
 
     #Recursion function that uses DFS to look for adjacent cells with 0 adjacent mines, and opens their adjacent cells
     def showAllAdjacent(self):
@@ -76,7 +78,8 @@ class Cell:
         self.cell_button_object.configure(bg = "red")
 
         ctypes.windll.user32.MessageBoxW(0, "You clicked on a mine!", "Game Over", 0)
-        sys.exit()
+        #Restart game
+        Cell.restartProgram()
 
     #Shows the number of cells that potentially has mines
     def showCell(self):
@@ -249,5 +252,10 @@ class Cell:
         #Safety precaution? so it loops back to 0 when it hits 999
         if Cell.start_time == 1000:
             Cell.start_time = 0
+
+    #Function used to restart the game
+    def restartProgram():
+        python = sys.executable
+        os.execl(python, python, * sys.argv)
 
 #BUG?:  a zero cell that's diagonal to another zero cell causes to expand to other cells
